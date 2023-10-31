@@ -42,9 +42,10 @@ if(len(errors) == 0):
     df = dummy_variable_col(df,'Specialty')
     #Insurance
     df = dummy_variable_col(df,'Insurance')
+    df = df.rename(columns={'Unknown':'Unknown Insurance'})
     #Marital Status
     df = dummy_variable_col(df,'Marital Status')
-    df = df.rename(columns={0:'Divorced', 1:'Single', 2:'Married', 3:'Widowed',4:'Unknown'})
+    df = df.rename(columns={0:'Divorced', 1:'Single', 2:'Married', 3:'Widowed',4:'Unknown Marital'})
     #Gender Binary Encode
     df['Gender'] = df['Gender'].map({'Male': 0, 'Female': 1})
     df.to_csv(file_output, index=False)
