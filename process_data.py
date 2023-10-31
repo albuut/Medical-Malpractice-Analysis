@@ -26,6 +26,7 @@ if(len(errors) == 0):
         errors.append("Invalid file input / Could not find file")
     
     if(len(errors) == 0):
+        #Log the Data
         if log_base == '10':
             df['log_Amount'] = np.log10(df['Amount'])
         elif log_base == '2':
@@ -47,7 +48,7 @@ if(len(errors) == 0):
     #Gender Binary Encode
     df['Gender'] = df['Gender'].map({'Male': 0, 'Female': 1})
     df.to_csv(file_output, index=False)
-    print("Successfully processed data to: " + file_output)
+    print("Successfully written data to: " + file_output)
 else:
     for e in reversed(errors):
         print(e)
