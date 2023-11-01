@@ -12,6 +12,16 @@ def dummy_variable_col(df, col):
 ## python3 function_name input output log_base
 errors = []
 
+#65 / 30 / 5
+#65% = inital training
+#30% is validation is used to tune your hyperparameters
+#5 is used to do the final performance check
+#added on this after
+#https://stackoverflow.com/questions/40829137/stratified-train-validation-test-split-in-scikit-learn
+#https://stackoverflow.com/questions/38250710/how-to-split-data-into-3-sets-train-validation-and-test
+#stratified sampling around target variable
+#val split test
+
 if(len(sys.argv) == 4):
     file_input = sys.argv[1]
     file_output = sys.argv[2]
