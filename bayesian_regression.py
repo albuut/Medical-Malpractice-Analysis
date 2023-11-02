@@ -7,31 +7,54 @@ from sklearn.metrics import mean_squared_error
 #submit base file name
 file_input = sys.argv[1]
 
-#65 / 30 / 5
-
-#stratified selection around target variable
-
-df = pd.read_csv(file_input)
+#SKLEARN Bayesian
+log_regressor = BayesianRidge()
 regressor = BayesianRidge()
 
+#File Names from Base Name
 train_suffix = '_train.csv'
 validate_suffix = '_validate.csv'
 test_suffix = '_test.csv'
 
-regressor = BayesianRidge()
+#Read Data from File
 df_train = pd.read_csv(file_input + train_suffix)
 df_validate = pd.read_csv(file_input + validate_suffix)
-df_test = pd.read_Csv(file_input + )
-df_train_x = df_train.drop(columns=['Amount','log_Amount'])
-df_train_y = df_train['log_Amount']
+df_test = pd.read_Csv(file_input + test_suffix)
 
-regressor.fit(df_train_x,df_train_y)
+#Get the Features X into one Matrix and extract what we're looking for
+train_x = df_train.drop(columns=['Amount','log_Amount'])
 
-df_test = df.iloc[len(df)//2:]
-df_test_x = df_test.drop(columns=['Amount','log_Amount'])
-df_test_y = df_test['log_Amount']
+#Get the target feature we want to predict
+log_train_y = df_train['log_Amount']
+train_y = df_train['Amount']
 
-df_y_predict = regressor.predict(df_test_x)
-mse = mean_squared_error(df_test_y, df_y_predict)
+#Check with log transform Transform
+log_regressor.fit(train_x, log_train_y)
+#Check without log Transform
+regressor.fit(train_x, train_y)
 
-print(mse)
+##TODO
+# Use current model to adjust hyperparameter and test with the validation data.
+# Look for methods to adjust hyperparameter
+# Checkout https://towardsdatascience.com/a-conceptual-explanation-of-bayesian-model-based-hyperparameter-optimization-for-machine-learning-b8172278050f
+
+
+
+#Extract Data from the Validation data set to train the hyperparameter
+validate_x = df_test.drop(columns=['Amount','log_Amount'])
+log_validate_y = df_test['log_Amount']
+validate_y = df_test['Amount']
+
+#Possibly a loop here or some kind of method to go about training the data
+log_y_predict = log_regressor.predict(validate_X)
+y_predict = regressor.predict(validate_x)
+
+#Figure out a good method of evaluation of the amount
+log_mse = mean_squared_error(validate_y, log_y_predict)
+mse = mean_squared_error(validate_y, y_predict)
+
+
+##TODO
+#Use the new hyperparameter data for newly trained model
+#Use the test data to retrieve points to evaluate
+#Write data to csv to use for analysis later 
