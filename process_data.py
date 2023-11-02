@@ -14,7 +14,7 @@ errors = []
 
 if(len(sys.argv) == 4):
     file_input = sys.argv[1]
-    file_output = sys.argv[2].split('.')
+    file_output = sys.argv[2]
     log_base = sys.argv[3]
 else:
     errors.append("Invalid Number of Arguments")
@@ -51,6 +51,7 @@ if(len(errors) == 0):
     df['Gender'] = df['Gender'].map({'Male': 0, 'Female': 1})
     
     #Shuffle Data and Split
+    #Consider checking out stratified splitting
     train, validate, test = np.split(df.sample(frac=1),[int(0.6*len(df)),int(.8*len(df))])
     
     train = train.reset_index(drop=True) #60%
@@ -59,13 +60,12 @@ if(len(errors) == 0):
     
     total_data = len(train) + len(validate) + len(test)
     
-    train.to_csv(file_output[0] + '_train.' + file_output[1], index=False)
-    print("Successfully written data to: " + file_output[0] + '_train.' + file_output[1] + ' which is ' + str(len(train)/total_data) + ' of the total data')
-    validate.to_csv(file_output[0] + '_validate.' + file_output[1], index=False)
-    print("Successfully written data to: " + file_output[0] + '_validate.' + file_output[1] + ' which is ' + str(len(validate)/total_data) + ' of the total data')
-    test.to_csv(file_output[0] + '_test.' + file_output[1], index =False)
-    print("Successfully written data to: " + file_output[0] + '_test.' + file_output[1] + ' which is ' + str(len(test)/total_data) + ' of the total data')
-    
+    train.to_csv(file_output + '_train.csv', index=False)
+    print("Successfully written data to: " + file_output + '_train.csv')
+    validate.to_csv(file_output + '_validate.csv', index=False)
+    print("Successfully written data to: " + file_output + '_validate.csv')
+    test.to_csv(file_output[0] + '_test.csv', index =False)
+    print("Successfully written data to: " + file_output + '_test.csv')
     
 else:
     for e in reversed(errors):
