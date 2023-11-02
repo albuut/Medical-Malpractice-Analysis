@@ -48,7 +48,7 @@ log_validate_y = df_test['log_Amount']
 validate_y = df_test['Amount']
 
 #Possibly a loop here or some kind of method to go about training the data
-log_y_predict = log_regressor.predict(validate_X)
+log_y_predict = log_regressor.predict(validate_x)
 y_predict = regressor.predict(validate_x)
 
 #Figure out a good method of evaluation of the amount
