@@ -14,7 +14,7 @@ errors = []
 
 if(len(sys.argv) == 4):
     file_input = sys.argv[1]
-    file_output = sys.argv[2]
+    file_output = sys.argv[2].split('.')
     log_base = sys.argv[3]
 else:
     errors.append("Invalid Number of Arguments")
@@ -49,8 +49,24 @@ if(len(errors) == 0):
     df = df.rename(columns={0:'Divorced', 1:'Single', 2:'Married', 3:'Widowed'})
     #Gender Binary Encode
     df['Gender'] = df['Gender'].map({'Male': 0, 'Female': 1})
-    df.to_csv(file_output, index=False)
-    print("Successfully written data to: " + file_output)
+    
+    #Shuffle Data and Split
+    train, validate, test = np.split(df.sample(frac=1),[int(0.6*len(df)),int(.8*len(df))])
+    
+    train = train.reset_index(drop=True) #60%
+    validate = validate.reset_index(drop=True) #20%
+    test = test.reset_index(drop=True) #20%
+    
+    total_data = len(train) + len(validate) + len(test)
+    
+    train.to_csv(file_output[0] + '_train.' + file_output[1], index=False)
+    print("Successfully written data to: " + file_output[0] + '_train.' + file_output[1] + ' which is ' + str(len(train)/total_data) + ' of the total data')
+    validate.to_csv(file_output[0] + '_validate.' + file_output[1], index=False)
+    print("Successfully written data to: " + file_output[0] + '_validate.' + file_output[1] + ' which is ' + str(len(validate)/total_data) + ' of the total data')
+    test.to_csv(file_output[0] + '_test.' + file_output[1], index =False)
+    print("Successfully written data to: " + file_output[0] + '_test.' + file_output[1] + ' which is ' + str(len(test)/total_data) + ' of the total data')
+    
+    
 else:
     for e in reversed(errors):
         print(e)
