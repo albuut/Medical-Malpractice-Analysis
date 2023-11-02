@@ -50,6 +50,7 @@ log_y_predict = log_regressor.predict(validate_X)
 y_predict = regressor.predict(validate_x)
 
 #Figure out a good method of evaluation of the amount
+#Checkout https://stats.stackexchange.com/questions/51046/how-to-check-if-my-regression-model-is-good
 log_mse = mean_squared_error(validate_y, log_y_predict)
 mse = mean_squared_error(validate_y, y_predict)
 
