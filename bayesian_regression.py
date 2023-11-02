@@ -43,8 +43,8 @@ regressor.fit(train_x, train_y)
 # https://machinelearningmastery.com/scikit-optimize-for-hyperparameter-tuning-in-machine-learning/
 
 #Extract Data from the Validation data set to train the hyperparameter
-validate_x = df_test.drop(columns=['Amount','log_Amount'])
-log_validate_y = df_test['log_Amount']
+validate_x = df_validate.drop(columns=['Amount','log_Amount'])
+log_validate_y = df_validate['log_Amount']
 validate_y = df_test['Amount']
 
 #Possibly a loop here or some kind of method to go about training the data
