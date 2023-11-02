@@ -36,9 +36,11 @@ regressor.fit(train_x, train_y)
 ##TODO
 # Use current model to adjust hyperparameter and test with the validation data.
 # Look for methods to adjust hyperparameter
-# Checkout https://towardsdatascience.com/a-conceptual-explanation-of-bayesian-model-based-hyperparameter-optimization-for-machine-learning-b8172278050f
-
-
+# Checkout 
+# https://towardsdatascience.com/a-conceptual-explanation-of-bayesian-model-based-hyperparameter-optimization-for-machine-learning-b8172278050f
+# https://machinelearningmastery.com/what-is-bayesian-optimization/
+# https://scikit-learn.org/stable/modules/grid_search.html
+# https://machinelearningmastery.com/scikit-optimize-for-hyperparameter-tuning-in-machine-learning/
 
 #Extract Data from the Validation data set to train the hyperparameter
 validate_x = df_test.drop(columns=['Amount','log_Amount'])
