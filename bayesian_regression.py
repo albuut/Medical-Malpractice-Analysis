@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.linear_model import BayesianRidge
 from sklearn.metrics import mean_squared_error
 
+#submit base file name
 file_input = sys.argv[1]
 
 #65 / 30 / 5
@@ -13,7 +14,14 @@ file_input = sys.argv[1]
 df = pd.read_csv(file_input)
 regressor = BayesianRidge()
 
-df_train = df.iloc[:len(df)//2]
+train_suffix = '_train.csv'
+validate_suffix = '_validate.csv'
+test_suffix = '_test.csv'
+
+regressor = BayesianRidge()
+df_train = pd.read_csv(file_input + train_suffix)
+df_validate = pd.read_csv(file_input + validate_suffix)
+df_test = pd.read_Csv(file_input + )
 df_train_x = df_train.drop(columns=['Amount','log_Amount'])
 df_train_y = df_train['log_Amount']
 
