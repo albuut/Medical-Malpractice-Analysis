@@ -6,8 +6,8 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import mean_squared_error
 
 #submit base file name
-#file_input = sys.argv[1]
-file_input = r'Medical-Malpractice-Analysis/processed_data'
+file_input = sys.argv[1]
+
 #sklearn Bayesian
 base_regressor = BayesianRidge()
 log_regressor = BayesianRidge()
