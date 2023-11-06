@@ -77,10 +77,3 @@ df_tuned_predict = pd.DataFrame(tuned_predict_data)
 log_tuned_predict_data = {'validate_y':validate_y,'base_predict':log_tuned_predict_validate}
 df_log_tuned_predict = pd.DataFrame(log_tuned_predict_data)
 
-#Write Data to CSV to be used later
-df_base_predict.to_csv(file_input + '_base_validate.csv', index=False)
-print("Successfully written data to: " + file_input + '_base_validate.csv')
-df_log_predict.to_csv(file_input + '_log_validate.csv', index=False)
-print("Successfully written data to: " + file_input + '_log_validate.csv')
-df_tuned_predict.to_csv(file_input + '_tuned_validate.csv', index =False)
-print("Successfully written data to: " + file_input + '_tuned_validate.csv')
