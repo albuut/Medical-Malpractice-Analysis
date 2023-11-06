@@ -31,18 +31,6 @@ X_test_sc = scaler.fit_transform(X_test)
 X_test = pd.DataFrame(X_test_sc)
 X_new_sc = scaler.transform(pd.DataFrame(df_validate.drop(columns=['Amount', 'log_Amount'])))
 
-#Find best K
-"""
-rmse_vals = [] #root mean squared error values
-for K in range(50):
-    K = K + 1
-    model = KNeighborsRegressor(n_neighbors=K)
-    model.fit(X=X_train, y=y_train)
-    predict = model.predict(X=X_test)
-    error =  sqrt(mean_squared_error(y_test, predict))
-    rmse_vals.append(error)
-    print( "k = ", K, "error: ", error)
-"""
 #Find best K using grid search
 params = {'n_neighbors': [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]}
 knn = KNeighborsRegressor()
