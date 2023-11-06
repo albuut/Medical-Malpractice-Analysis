@@ -2,13 +2,14 @@ import sys
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import BayesianRidge
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import mean_squared_error
 
 #submit base file name
-file_input = sys.argv[1]
-
-#SKLEARN Bayesian
+#file_input = sys.argv[1]
+file_input = r'Medical-Malpractice-Analysis/processed_data'
+#sklearn Bayesian
+base_regressor = BayesianRidge()
 log_regressor = BayesianRidge()
 regressor = BayesianRidge()
 
@@ -20,51 +21,60 @@ test_suffix = '_test.csv'
 #Read Data from File
 df_train = pd.read_csv(file_input + train_suffix)
 df_validate = pd.read_csv(file_input + validate_suffix)
-df_test = pd.read_Csv(file_input + test_suffix)
+df_test = pd.read_csv(file_input + test_suffix)
 
 #Get the Features X into one Matrix and extract what we're looking for
-log_train_y, train_y, train_x = df_train.drop(columns=['Amount','log_Amount']), df_train['Amount'], df_train['log_Amount']
+train_x, train_y, log_train_y = df_train.drop(columns=['Amount','log_Amount']), df_train['Amount'], df_train['log_Amount']
 
-#Check with log transform Transform
-log_regressor.fit(train_x, log_train_y)
-#Check without log Transform
-regressor.fit(train_x, train_y)
-
-##TODO
-# Use current model to adjust hyperparameter and test with the validation data.
-# Look for methods to adjust hyperparameter
-# Checkout 
-# https://towardsdatascience.com/a-conceptual-explanation-of-bayesian-model-based-hyperparameter-optimization-for-machine-learning-b8172278050f
-# https://machinelearningmastery.com/what-is-bayesian-optimization/
-# https://scikit-learn.org/stable/modules/grid_search.html
-# https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation
-# https://scikit-learn.org/stable/modules/grid_search.html
-# https://machinelearningmastery.com/scikit-optimize-for-hyperparameter-tuning-in-machine-learning/
-
-#1 is shape paramemter and 2 is inverse scale parameter
-grid = {
-    'alpha_1': np.linspace(1e-8,1e-2,num=100),
-    'alpha_2': np.linspace(1e-8,1e-2,num=100),
-    'lambda_1': np.linspace(1e-8,1e-2,num=100),
-    'lambda_2':np.linspace(1e-8,1e-2,num=100)
+#Finding Bayesian Hyperparameters
+bayesian_param = {
+    'alpha_1': np.linspace(1e-2,5,num=100),
+    'alpha_2': np.linspace(1e-2,5,num=100),
+    'lambda_1': np.linspace(1e-2,5,num=100),
+    'lambda_2':np.linspace(1e-2,5,num=100)
 }
-#use grid search cv
+
+#Randomized Search to find the best hyperparameters
+log_random_search_cv = RandomizedSearchCV(log_regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=1,random_state=1)
+log_random_search_cv.fit(train_x,log_train_y)
+log_param = log_random_search_cv.best_params_
+
+#Randomized Search to find the best hyperparameters
+random_search_cv = RandomizedSearchCV(regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=1,random_state=1)
+random_search_cv.fit(train_x,train_y)
+param = random_search_cv.best_params_
+
+#Base hyperparameters
+base_regressor.fit(train_x,train_y)
+
+#Log model with hyperparameters
+log_model = BayesianRidge(alpha_1 = log_param['alpha_1'], alpha_2 = log_param['alpha_2'], lambda_1 = log_param['lambda_1'], lambda_2 = log_param['lambda_2'])
+log_model.fit(train_x, log_train_y)
+
+#Model with hyperparamters
+trained_model = BayesianRidge(alpha_1 = param['alpha_1'], alpha_2 = param['alpha_2'], lambda_1 = param['lambda_1'], lambda_2 = param['lambda_2'])
+trained_model.fit(train_x,train_y)
 
 #Extract Data from the Validation data set to train the hyperparameter
-log_validate_y, validate_y, validate_x = df_validate.drop(columns=['Amount','log_Amount']), df_validate['Amount'], df_validate['log_Amount']
+validate_x, validate_y, log_validate_y = df_validate.drop(columns=['Amount','log_Amount']), df_validate['Amount'], df_validate['log_Amount']
 
-#Possibly a loop here or some kind of method to go about training the data
-log_y_predict = log_regressor.predict(validate_x)
-y_predict = regressor.predict(validate_x)
+#Here we compare validate our model to see which one is the best in this dataset.
+base_predict_validate = base_regressor.predict(validate_x)
+log_predict_validate = log_model.predict(validate_x)
+tuned_predict_validate = trained_model.predict(validate_x)
 
-#Figure out a good method of evaluation of the amount
-#Checkout https://stats.stackexchange.com/questions/51046/how-to-check-if-my-regression-model-is-good
-log_mse = mean_squared_error(validate_y, log_y_predict)
-mse = mean_squared_error(validate_y, y_predict)
+base_predict_data = {'validate_y':validate_y,'base_predict':base_predict_validate}
+df_base_predict = pd.DataFrame(base_predict_data)
 
+log_predict_data = {'log_validate_y':log_validate_y,'base_predict':log_predict_validate}
+df_log_predict = pd.DataFrame(log_predict_data)
 
-##TODO
-#Use the new hyperparameter data for newly trained model
-#Use the test data to retrieve points to evaluate
-#Write data to csv to use for analysis later 
-log_test_y, test_y, test_x = df_test.drop(columns=['Amount','log_Amount']), df_test['Amount'], df_test['log_Amount']
+tuned_predict_data = {'validate_y':validate_y,'base_predict':tuned_predict_validate}
+df_tuned_predict = pd.DataFrame(tuned_predict_data)
+
+base_predict_data.to_csv(file_input + '_base_validate.csv', index=False)
+print("Successfully written data to: " + file_input + '_base_validate.csv')
+log_predict_data.to_csv(file_input + '_log_validate.csv', index=False)
+print("Successfully written data to: " + file_input + '_log_validate.csv')
+tuned_predict_validate.to_csv(file_input + '_tuned_validate.csv', index =False)
+print("Successfully written data to: " + file_input + '_tuned_validate.csv')
