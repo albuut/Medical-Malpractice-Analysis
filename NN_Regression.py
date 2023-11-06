@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
+from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error # used to evaluate the quality of model for comparison purposes
 import sys 
 
@@ -30,6 +31,17 @@ X_train = pd.DataFrame(X_train_sc)
 X_test_sc = scaler.fit_transform(X_test)
 X_test = pd.DataFrame(X_test_sc)
 X_new_sc = scaler.transform(pd.DataFrame(df_validate.drop(columns=['Amount', 'log_Amount'])))
+
+#pca
+
+pca = PCA()
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+
+
+#Factor Analysis
+
 
 #Find best K using grid search
 params = {'n_neighbors': [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]}
