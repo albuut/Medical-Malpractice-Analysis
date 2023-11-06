@@ -28,19 +28,19 @@ train_x, train_y, log_train_y = df_train.drop(columns=['Amount','log_Amount']), 
 
 #Finding Bayesian Hyperparameters
 bayesian_param = {
-    'alpha_1': np.linspace(1e-2,5,num=100),
-    'alpha_2': np.linspace(1e-2,5,num=100),
-    'lambda_1': np.linspace(1e-2,5,num=100),
-    'lambda_2':np.linspace(1e-2,5,num=100)
+    'alpha_1': np.linspace(1e-2,4,num=100),
+    'alpha_2': np.linspace(1e-2,4,num=100),
+    'lambda_1': np.linspace(1e-2,4,num=100),
+    'lambda_2':np.linspace(1e-2,4,num=100)
 }
 
 #Randomized Search to find the best hyperparameters
-log_random_search_cv = RandomizedSearchCV(log_regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=5,random_state=1)
+log_random_search_cv = RandomizedSearchCV(log_regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=10,random_state=1)
 log_random_search_cv.fit(train_x,log_train_y)
 log_param = log_random_search_cv.best_params_
 
 #Randomized Search to find the best hyperparameters
-random_search_cv = RandomizedSearchCV(regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=5,random_state=1)
+random_search_cv = RandomizedSearchCV(regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=10,random_state=1)
 random_search_cv.fit(train_x,train_y)
 param = random_search_cv.best_params_
 
@@ -76,5 +76,5 @@ df_base_predict.to_csv(file_input + '_base_validate.csv', index=False)
 print("Successfully written data to: " + file_input + '_base_validate.csv')
 df_log_predict.to_csv(file_input + '_log_validate.csv', index=False)
 print("Successfully written data to: " + file_input + '_log_validate.csv')
-tuned_predict_data.to_csv(file_input + '_tuned_validate.csv', index =False)
+df_tuned_predict.to_csv(file_input + '_tuned_validate.csv', index =False)
 print("Successfully written data to: " + file_input + '_tuned_validate.csv')
