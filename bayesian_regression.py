@@ -35,12 +35,12 @@ bayesian_param = {
 }
 
 #Randomized Search to find the best hyperparameters
-log_random_search_cv = RandomizedSearchCV(log_regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=1,random_state=1)
+log_random_search_cv = RandomizedSearchCV(log_regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=5,random_state=1)
 log_random_search_cv.fit(train_x,log_train_y)
 log_param = log_random_search_cv.best_params_
 
 #Randomized Search to find the best hyperparameters
-random_search_cv = RandomizedSearchCV(regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=1,random_state=1)
+random_search_cv = RandomizedSearchCV(regressor, param_distributions=bayesian_param,n_iter=100, cv=10, verbose=1,n_jobs=5,random_state=1)
 random_search_cv.fit(train_x,train_y)
 param = random_search_cv.best_params_
 
