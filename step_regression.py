@@ -32,9 +32,11 @@ X = sm.add_constant(X)
 # create a linear regression model using our variables
 model = sm.OLS(y, X)
 fit_model = model.fit()
+# predict using all independent variables as features
 baseline_predict = fit_model.predict(X)
 df_test_y = df_test['log_Amount']
 baseline_predict = baseline_predict[:len(df_test_y)]
+# compute rmse and msa of baseline model predictions
 baseline_mse = mean_squared_error(df_test_y, baseline_predict)
 baseline_mae = mean_absolute_error(df_test_y, baseline_predict)
 # displays the results of the model
