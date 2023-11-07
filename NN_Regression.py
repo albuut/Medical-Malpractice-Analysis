@@ -100,15 +100,11 @@ model_knn = KNeighborsRegressor(n_neighbors=params.get('n_neighbors'))
 model_knn.fit(X=X_train, y=y_train)
 predict = model.predict(X=X_test)
 
-#Putting predictions in csv file
-results = pd.read_csv(file_input + '_test.csv')
-results = results.loc[:, results.columns.intersection(['log_Amount'])]
-results["model_Amount"] = predict
-results.to_csv('KNN_results.csv', index =False)
-
-#Find error and other values
-t_stat, p_val = stats.ttest_ind(results['log_Amount'].values, results['model_Amount'].values)
-print("Mean Absolute Error: ", mean_absolute_error(results['log_Amount'].values, results['model_Amount'].values))
-print("Root Mean Squared Error: ", sqrt(mean_squared_error(results['log_Amount'].values, results['model_Amount'].values)))
+#Calculate mse, rmse, T stat, P Val
+mse = mean_squared_error(y_test, predict)
+rmse = sqrt(mse)
+t_stat, p_val = stats.ttest_ind(y_test, predict)
+print("Mean Absolute Error: ", mse)
+print("Root Mean Squared Error: ", rmse)
 print("T-Statistic: ", t_stat)
 print("P-Value: ", p_val)
