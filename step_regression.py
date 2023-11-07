@@ -1,14 +1,23 @@
 import sys
 import pandas as pd
+import numpy as np
 import statsmodels.api as sm
 from stepwise_regression import step_reg
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 
 # input prprocessed .csv malpractice data file in from the command line
 file_input = sys.argv[1]
 
 # read in inputted file
-df = pd.read_csv(file_input)
+
+train_suffix = '_train.csv'
+validate_suffix = '_validate.csv'
+test_suffix = '_test.csv'
+
+df = pd.read_csv(file_input + train_suffix)
+df_validate = pd.read_csv(file_input + validate_suffix)
+df_test = pd.read_csv(file_input + test_suffix)
 
 # consider all features (independent variables) except for 'Amount' and 'log_Amount'
 X = df.drop(['log_Amount', 'Amount'], axis=1)
@@ -41,9 +50,17 @@ fit_back_model = back_model.fit()
 
 # make predictions using the new model with selected features from backward selection
 b_y_predict = fit_back_model.predict(X_backselect)
-# calculate the mean squared error of the predictions compared to the actual values
-b_mse = mean_squared_error(y, b_y_predict)
-print("Backward selection MSE:", b_mse)
+# use the testing set
+df_test_x = df_test.drop(columns=['Amount', 'log_Amount'])
+df_test_y = df_test['log_Amount']
+b_y_predict = b_y_predict[:len(df_test_y)]
+# calculate the root mean squared error and mean absolute error of the  predictions compared to the actual values
+b_mse = mean_squared_error(df_test_y, b_y_predict)
+b_mae = mean_absolute_error(df_test_y, b_y_predict)
+# b_mse = mean_squared_error(y, b_y_predict)
+# b_mae = mean_absolute_error(y, b_y_predict)
+print("Backward selection MSE:", np.sqrt(b_mse))
+print("Backward selection MAE:", b_mae)
 
 # using the step_reg library, perform forward selection on the features (X)
 # forwardselect will store a list of feature names sorted by significance to 'log_Amount' (highest to lowest)
@@ -60,6 +77,11 @@ fit_forward_model = forward_model.fit()
 
 # make predictions using the new model with selected features from forward selection
 f_y_predict = fit_forward_model.predict(X_forwardselect)
-# calculate the mean squared error of the predictions compared to the actual values
-f_mse = mean_squared_error(y, f_y_predict)
-print("Forward selection MSE:", f_mse)
+f_y_predict = f_y_predict[:len(df_test_y)]
+# calculate the root mean squared error and mean absolute error of the predictions compared to the actual values
+f_mse = mean_squared_error(df_test_y, f_y_predict)
+f_mae = mean_absolute_error(df_test_y, f_y_predict)
+# f_mse = mean_absolute_error(y, f_y_predict)
+# f_mse = mean_squared_error(y, f_y_predict)
+print("Forward selection MSE:", np.sqrt(f_mse))
+print("Forward selection MAE:", f_mae)
