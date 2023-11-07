@@ -32,8 +32,16 @@ X = sm.add_constant(X)
 # create a linear regression model using our variables
 model = sm.OLS(y, X)
 fit_model = model.fit()
+baseline_predict = fit_model.predict(X)
+df_test_y = df_test['log_Amount']
+baseline_predict = baseline_predict[:len(df_test_y)]
+baseline_mse = mean_squared_error(df_test_y, baseline_predict)
+baseline_mae = mean_absolute_error(df_test_y, baseline_predict)
 # displays the results of the model
 # print(fit_model.summary())
+print("Baseline selection RMSE:", np.sqrt(baseline_mse))
+print("Baseline selection MAE:", baseline_mae)
+
 
 # using the step_reg library, perform backward selection on the features (X)
 # backselect will store a list of feature names sorted by significance to 'log_Amount' (highest to lowest)
@@ -51,8 +59,6 @@ fit_back_model = back_model.fit()
 # make predictions using the new model with selected features from backward selection
 b_y_predict = fit_back_model.predict(X_backselect)
 # use the testing set
-df_test_x = df_test.drop(columns=['Amount', 'log_Amount'])
-df_test_y = df_test['log_Amount']
 b_y_predict = b_y_predict[:len(df_test_y)]
 # calculate the root mean squared error and mean absolute error of the  predictions compared to the actual values
 b_mse = mean_squared_error(df_test_y, b_y_predict)
