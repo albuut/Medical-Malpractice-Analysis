@@ -63,7 +63,7 @@ if(len(errors) == 0):
     
     train.to_csv(file_output + '_train.csv', index=False)
     print("Successfully written data to: " + file_output + '_train.csv')
-    test.to_csv(file_output + '_test.csv', index=False)
+    test.to_csv(file_output + '_validate.csv', index=False)
     print("Successfully written data to: " + file_output + '_validate.csv')
     test.to_csv(file_output + '_test.csv', index =False)
     print("Successfully written data to: " + file_output + '_test.csv')
