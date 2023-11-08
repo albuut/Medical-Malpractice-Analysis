@@ -8,7 +8,7 @@ from sklearn.decomposition import PCA
 from factor_analyzer import FactorAnalyzer
 from sklearn.random_projection import GaussianRandomProjection
 from feature_engine.outliers import OutlierTrimmer
-from sklearn.metrics import mean_squared_error, mean_absolute_error # used to evaluate the quality of model for comparison purposes
+from sklearn.metrics import mean_squared_error, mean_absolute_error, accuracy_score # used to evaluate the quality of model for comparison purposes
 from math import sqrt
 
 
@@ -26,7 +26,7 @@ df_test = pd.read_csv(file_input + test_suffix)
 '''
 pt = PowerTransformer()
 df_train_new = pt.fit_transform(df_train)
-df_test_new = pt.fit_transform(df_test)
+df_test_new = pt.transform(df_test)
 
 #Create train and test sets for power transformer
 X_train = pd.DataFrame(df_train_new, columns=df_train.columns).drop(columns=['Amount', 'log_Amount'])
@@ -89,22 +89,30 @@ X_test = rp.transform(X_test)
 '''
 
 #Find best K using grid search
+#'''
 params = {'n_neighbors': [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]}
 knn = KNeighborsRegressor()
 model = GridSearchCV(knn, params, cv=5)
 model.fit(X_train, y_train)
 params = model.best_params_
 
+
 #Fit K nearest neighbors
 model_knn = KNeighborsRegressor(n_neighbors=params.get('n_neighbors'))
 model_knn.fit(X=X_train, y=y_train)
-predict = model.predict(X=X_test)
+predict = model_knn.predict(X=X_test)
+'''
+model_knn = KNeighborsRegressor()
+model_knn.fit(X_train, y_train)
+predict = model_knn.predict(X_test)
+'''
 
 #Calculate mse, rmse, T stat, P Val
 mse = mean_squared_error(y_test, predict)
+mae = mean_absolute_error(y_test, predict)
 rmse = sqrt(mse)
 t_stat, p_val = stats.ttest_ind(y_test, predict)
-print("Mean Absolute Error: ", mse)
+print("Mean Absolute Error: ", mae)
 print("Root Mean Squared Error: ", rmse)
 print("T-Statistic: ", t_stat)
 print("P-Value: ", p_val)
