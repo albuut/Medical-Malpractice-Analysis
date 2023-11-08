@@ -52,17 +52,18 @@ if(len(errors) == 0):
     
     #Shuffle Data and Split
     #Consider checking out stratified splitting
-    train, validate, test = np.split(df.sample(frac=1),[int(0.6*len(df)),int(.8*len(df))])
+    np.random.seed(1)
+    train, test, test = np.split(df.sample(frac=1),[int(0.6*len(df)),int(.8*len(df))])
     
     train = train.reset_index(drop=True) #60%
-    validate = validate.reset_index(drop=True) #20%
+    test = test.reset_index(drop=True) #20%
     test = test.reset_index(drop=True) #20%
     
-    total_data = len(train) + len(validate) + len(test)
+    total_data = len(train) + len(test) + len(test)
     
     train.to_csv(file_output + '_train.csv', index=False)
     print("Successfully written data to: " + file_output + '_train.csv')
-    validate.to_csv(file_output + '_validate.csv', index=False)
+    test.to_csv(file_output + '_test.csv', index=False)
     print("Successfully written data to: " + file_output + '_validate.csv')
     test.to_csv(file_output + '_test.csv', index =False)
     print("Successfully written data to: " + file_output + '_test.csv')
