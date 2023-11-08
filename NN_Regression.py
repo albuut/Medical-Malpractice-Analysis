@@ -39,8 +39,8 @@ y_test = df_test['log_Amount']
 '''
 ot = OutlierTrimmer(capping_method='gaussian', tail='both', fold=1.5, variables=['log_Amount'])
 ot.fit(df_train)
-ot.transform(df_train)
-ot.transform(df_test)
+df_train = ot.transform(df_train)
+df_test = ot.transform(df_test)
 '''
 
 #Create train and test sets -> [****]
@@ -60,7 +60,7 @@ X_test = pd.DataFrame(X_test_sc)
 
 #pca
 '''
-pca = PCA()
+pca = PCA(n_components=2)
 pca.fit(X_train)
 X_train = pca.transform(X_train)
 X_test = pca.transform(X_test)
