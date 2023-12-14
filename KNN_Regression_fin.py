@@ -14,6 +14,7 @@ from math import sqrt
 
 #########################################################################
 # define knn regression function
+# Read through this documentation (https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html)
 def knnRegressor(X_train, X_test, y_train, k):
     kd_tree = KDTree(X_train)
     dd, ii = kd_tree.query(X_test, k=k)
@@ -25,6 +26,7 @@ def knnRegressor(X_train, X_test, y_train, k):
     return np.array(predictions)
     
 # Define function to find the best k
+# Took some inspiration for this function here (https://www.analyticsvidhya.com/blog/2018/08/k-nearest-neighbor-introduction-regression-python/)
 def bestK(X_train, X_test, y_train, y_test):
     k_values = np.linspace(2,20,num=19,dtype=int)
     mse = []
@@ -111,7 +113,6 @@ X_test = rp.transform(X_test)
 
 # Find best k
 best_k = bestK(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
-
 # Fit K nearest neighbors and return predictions
 predict = knnRegressor(X_train=X_train, X_test=X_test, y_train=y_train, k=best_k)
 
