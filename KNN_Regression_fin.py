@@ -2,6 +2,7 @@ import sys
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
+from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.model_selection import GridSearchCV
 from sklearn.decomposition import PCA
@@ -12,9 +13,9 @@ from scipy.spatial import KDTree
 from sklearn.metrics import mean_squared_error, mean_absolute_error # used to evaluate the quality of model for comparison purposes
 from math import sqrt
 
-#########################################################################
+
 # define knn regression function
-# Read through this documentation (https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html)
+# Read through this documentation for KDTree(https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html)
 def knnRegressor(X_train, X_test, y_train, k):
     kd_tree = KDTree(X_train)
     dd, ii = kd_tree.query(X_test, k=k)
@@ -35,7 +36,7 @@ def bestK(X_train, X_test, y_train, y_test):
         mse.append(((y_test - predictions) ** 2).mean())
     best_k = k_values[np.argmin(mse)]
     return best_k
-##########################################################################
+##################################################################
 
 file_input = sys.argv[1]
 
@@ -115,6 +116,48 @@ X_test = rp.transform(X_test)
 best_k = bestK(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
 # Fit K nearest neighbors and return predictions
 predict = knnRegressor(X_train=X_train, X_test=X_test, y_train=y_train, k=best_k)
+
+# Cross Validation
+# The custom_cross_validate_knn function came from chatgpt
+#*********************************************************************************
+def custom_cross_validate_knn(X_train, y_train, X_test, y_test, cv=5):
+     kf = KFold(n_splits=cv, shuffle=True, random_state=42)
+     rmse_scores = []
+     mae_scores = []
+
+    # Obtain the best 'k' using the provided function
+     best_k = bestK(X_train, X_test, y_train, y_test)
+
+     for train_index, val_index in kf.split(X_train):
+        X_cv_train, X_cv_val = X_train.iloc[train_index], X_train.iloc[val_index]
+        y_cv_train, y_cv_val = y_train.iloc[train_index], y_train.iloc[val_index]
+
+        # Make predictions using your knnRegressor function with the best 'k'
+        y_pred = knnRegressor(X_cv_train.values, X_cv_val.values, y_cv_train, best_k)
+
+        # Calculate evaluation metrics (RMSE and MAE)
+        rmse = np.sqrt(mean_squared_error(y_cv_val, y_pred))
+        mae = mean_absolute_error(y_cv_val, y_pred)
+
+        rmse_scores.append(rmse)
+        mae_scores.append(mae)
+
+     return rmse_scores, mae_scores, best_k
+
+custom_rmse_scores, custom_mae_scores, best_k = custom_cross_validate_knn(X_train, y_train, X_test, y_test)
+#**************************************************************************************************************
+# Calculate mean and standard deviation of the custom RMSE and MAE scores
+mean_rmse = np.mean(custom_rmse_scores)
+std_rmse = np.std(custom_rmse_scores)
+mean_mae = np.mean(custom_mae_scores)
+std_mae = np.std(custom_mae_scores)
+
+# Output results for your knnRegressor and best 'k'
+print("Mean Absolute Error (CV):", mean_mae)
+print("Standard Deviation of MAE (CV):", std_mae)
+print("Root Mean Squared Error (CV):", mean_rmse)
+print("Standard Deviation of RMSE (CV):", std_rmse)
+print("===================================================")
 
 #Calculate mse, rmse, T stat, P Val
 mse = mean_squared_error(y_test, predict)
