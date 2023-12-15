@@ -133,18 +133,6 @@ test_suffix = '_test.csv'
 df = pd.read_csv(file_input + train_suffix)
 df_test = pd.read_csv(file_input + test_suffix)
 
-# Create data frame will all the data for k-fold cross validation
-file_paths = [file_input + train_suffix, file_input +
-              validate_suffix, file_input + test_suffix]
-# Create an empty DataFrame to store the combined data
-combined_data = pd.DataFrame()
-# Iterate through each file and concatenate its data to the combined DataFrame
-for file_path in file_paths:
-    combined_data = pd.concat([combined_data, df], ignore_index=True)
-# Store features and target variable
-X_total = combined_data.drop(['log_Amount', 'Amount'], axis=1)
-y_total = combined_data['log_Amount']
-
 '''
 # Outlier Trimmer
 ot = OutlierTrimmer(capping_method='gaussian', tail='both',
@@ -250,7 +238,6 @@ X_test_backward = spline_backward.transform(
 coefficients_backward = linear_regression(
     X_train_backward, df['log_Amount'])
 
-
 # Make predictions on the test set for backward selection
 y_pred_test_backward = predict(X_test_backward, coefficients_backward)
 
@@ -264,8 +251,8 @@ t_stat_backward, p_val_backward = stats.ttest_ind(
 
 print("\nBackward Selection Metrics:")
 print("Root Mean Squared Error:", np.sqrt(
-    mse_test_backward))  # 0.43075964114722676
-print("Mean Absolute Error:", mae_test_backward)  # 0.336636740762581
+    mse_test_backward))  # 0.39709943647678114
+print("Mean Absolute Error:", mae_test_backward)  # 0.31643322939296303
 print("T-Statistic:", t_stat_backward)  # 0.5615286668588928
 print("P-Value", p_val_backward)  # 0.5744435869932845
 
@@ -367,7 +354,7 @@ print("Root Mean Squared Error:", np.sqrt(
     mse_test_forward))  # 0.38986819406649675
 print("Mean Absolute Error:", mae_test_forward)  # 0.3090991406848745
 print("T-Statistic:", t_stat_forward)  # 0.593074356643158
-print("P-Value", p_val_forward)  # 0.553138205510898
+print("P-Value:", p_val_forward)  # 0.553138205510898
 
 # Scatter plot for backward selection
 plt.figure(figsize=(10, 6))
