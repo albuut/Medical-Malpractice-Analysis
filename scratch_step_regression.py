@@ -1,9 +1,9 @@
 import sys
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, PowerTransformer
 from feature_engine.outliers import OutlierTrimmer
@@ -122,39 +122,6 @@ def predict(X, coefficients):  # Function to make predictions using the linear r
     return np.dot(X_with_constant, coefficients)
 
 
-def evaluate_with_cross_validation(X, y, feature_selection_func, num_folds=5):
-    kf = KFold(n_splits=num_folds, shuffle=True, random_state=42)
-    rmse_scores = []
-    mae_scores = []
-
-    for fold, (train_index, test_index) in enumerate(kf.split(X), 1):
-        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-
-        selected_features = feature_selection_func(X_train, y_train)
-
-        X_train_selected = X_train[selected_features]
-        X_test_selected = X_test[selected_features]
-
-        coefficients = linear_regression(X_train_selected, y_train)
-        y_pred_test = predict(X_test_selected, coefficients)
-
-        mse = mean_squared_error(y_test, y_pred_test)
-        mae = mean_absolute_error(y_test, y_pred_test)
-
-        print(f"Fold {fold} - RMSE: {np.sqrt(mse)}, MAE: {mae}")
-
-        rmse_scores.append(np.sqrt(mse))
-        mae_scores.append(mae)
-
-    avg_mse = np.mean(rmse_scores)
-    avg_mae = np.mean(mae_scores)
-
-    print("\nAverage Cross-Validation Metrics:")
-    print("Root Mean Squared Error (CV):", avg_mse)
-    print("Mean Absolute Error (CV):", avg_mae)
-
-
 # Input preprocessed .csv malpractice data file in from the command line
 file_input = sys.argv[1]
 
@@ -189,10 +156,14 @@ df_test = ot.transform(df_test)
 # Backward Selection Metrics:
 # Root Mean Squared Error: 0.29352929071517936
 # Mean Absolute Error: 0.2371539729510591
+# T-Statistic: -0.19536158153338734
+# P-Value: 0.8451123178857909
 
 # Forward Selection Metrics:
 # Root Mean Squared Error: 0.2899315256103601
 # Mean Absolute Error: 0.23436765915024999
+# T-Statistic: -0.22923429327980513
+# P-Value: 0.8186896868788887
 '''
 
 # Store features and target variable
@@ -220,6 +191,8 @@ X_test_backward = pt_backward.transform(
 # Backward Selection Metrics:
 # Root Mean Squared Error: 0.3960538810215383
 # Mean Absolute Error: 0.315541649768746
+# T-Statistic: 0.5397020282412468
+# P-Value: 0.5894086466504025
 '''
 
 '''
@@ -235,6 +208,8 @@ X_test_backward = pca_backward.transform(
 # Backward Selection Metrics:
 # Root Mean Squared Error: 0.4337454567389689
 # Mean Absolute Error: 0.3454785962826903
+# T-Statistic: 0.7452119116617325
+# P-Value: 0.45615252161101894
 '''
 
 '''
@@ -251,9 +226,10 @@ X_test_backward = rp_backward.transform(
 # Backward Selection Metrics:
 # Root Mean Squared Error: 0.43075964114722676
 # Mean Absolute Error: 0.336636740762581
+# T-Statistic: 1.144370323086886
+# P-Value: 0.25248400690469
 '''
 
-'''
 # Polynomial Spline Transformer
 scaler_backward = StandardScaler()
 spline_backward = PolynomialFeatures(degree=2, include_bias=False)
@@ -266,7 +242,9 @@ X_test_backward = spline_backward.transform(
 # Backward Selection Metrics:
 # Root Mean Squared Error: 0.36316046950655695
 # Mean Absolute Error: 0.2873368987172316
-'''
+# T-Statistic: 0.2781822423493186
+# P-Value: 0.780875387795647
+
 
 # Train the model
 coefficients_backward = linear_regression(
@@ -281,11 +259,15 @@ mse_test_backward = mean_squared_error(
     df_test['log_Amount'], y_pred_test_backward)
 mae_test_backward = mean_absolute_error(
     df_test['log_Amount'], y_pred_test_backward)
+t_stat_backward, p_val_backward = stats.ttest_ind(
+    df_test['log_Amount'], y_pred_test_backward)
 
 print("\nBackward Selection Metrics:")
 print("Root Mean Squared Error:", np.sqrt(
     mse_test_backward))  # 0.43075964114722676
 print("Mean Absolute Error:", mae_test_backward)  # 0.336636740762581
+print("T-Statistic:", t_stat_backward)  # 0.5615286668588928
+print("P-Value", p_val_backward)  # 0.5744435869932845
 
 
 # Backward selection testing
@@ -309,6 +291,8 @@ X_test_forward = pt_forward.transform(
 # Forward Selection Metrics:
 # Root Mean Squared Error: 0.3888123152304183
 # Mean Absolute Error: 0.30821124450875603
+# T-Statistic: 0.5721481247130135
+# P-Value: 0.5672281627775031
 '''
 
 '''
@@ -324,6 +308,8 @@ X_test_forward = pca_forward.transform(
 # Forward Selection Metrics:
 # Root Mean Squared Error: 0.4153849998079175
 # Mean Absolute Error: 0.33164110332046043
+# T-Statistic: 0.6321654000906143
+# P-Value: 0.5272861466921093
 '''
 
 '''
@@ -340,6 +326,8 @@ X_test_forward = rp_forward.transform(
 # Forward Selection Metrics:
 # Root Mean Squared Error: 0.4308594678148278
 # Mean Absolute Error: 0.3364893211702865
+# T-Statistic: 0.4308594678148278
+# P-Value: 0.3364893211702865
 '''
 
 '''
@@ -355,6 +343,8 @@ X_test_forward = spline_forward.transform(
 # Forward Selection Metrics:
 # Root Mean Squared Error: 0.3550917144946819
 # Mean Absolute Error: 0.2805816432954388
+# T-Statistic: 0.4174581025680855
+# P-Value: 0.6763479172801476
 '''
 
 # Train the model for forward selection
@@ -369,21 +359,15 @@ mse_test_forward = mean_squared_error(
     df_test['log_Amount'], y_pred_test_forward)
 mae_test_forward = mean_absolute_error(
     df_test['log_Amount'], y_pred_test_forward)
+t_stat_forward, p_val_forward = stats.ttest_ind(
+    df_test['log_Amount'], y_pred_test_forward)
 
 print("\nForward Selection Metrics:")
 print("Root Mean Squared Error:", np.sqrt(
     mse_test_forward))  # 0.38986819406649675
 print("Mean Absolute Error:", mae_test_forward)  # 0.3090991406848745
-
-
-# Backward selection testing with cross-validation
-print("\nBackward Selection Cross-Validation:")
-evaluate_with_cross_validation(X_total, y_total, backward_selection)
-
-# Forward selection testing with cross-validation
-print("\nForward Selection Cross-Validation:")
-evaluate_with_cross_validation(X_total, y_total, forward_selection)
-
+print("T-Statistic:", t_stat_forward)  # 0.593074356643158
+print("P-Value", p_val_forward)  # 0.553138205510898
 
 # Scatter plot for backward selection
 plt.figure(figsize=(10, 6))
