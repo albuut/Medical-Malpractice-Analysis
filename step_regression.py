@@ -71,7 +71,7 @@ b_mae = mean_absolute_error(df_test_y, b_y_predict)
 t_stat_backward, p_val_backward = stats.ttest_ind(
     df_test['log_Amount'], b_y_predict)
 
-print("Backward selection metrics:")
+print("\nBackward selection metrics:")
 print("RMSE:", np.sqrt(b_mse))
 print("MAE:", b_mae)
 print("T-Statistic:", t_stat_backward)
@@ -99,7 +99,7 @@ f_mae = mean_absolute_error(df_test_y, f_y_predict)
 t_stat_forward, p_val_forward = stats.ttest_ind(
     df_test['log_Amount'], f_y_predict)
 
-print("Forward selection metrics: ")
+print("\nForward selection metrics: ")
 print("RMSE:", np.sqrt(f_mse))
 print("MAE:", f_mae)
 print("T-Statistic:", t_stat_forward)
