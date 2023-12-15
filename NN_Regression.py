@@ -9,7 +9,6 @@ from sklearn.decomposition import PCA
 from factor_analyzer import FactorAnalyzer
 from sklearn.random_projection import GaussianRandomProjection
 from feature_engine.outliers import OutlierTrimmer
-from sklearn.model_selection import cross_validate
 from sklearn.metrics import mean_squared_error, mean_absolute_error, accuracy_score # used to evaluate the quality of model for comparison purposes
 from math import sqrt
 
@@ -103,23 +102,6 @@ params = model.best_params_
 model_knn = KNeighborsRegressor(n_neighbors=params.get('n_neighbors'))
 model_knn.fit(X=X_train, y=y_train)
 predict = model_knn.predict(X=X_test)
-
-# Cross Validation 
-cv_results = cross_validate(model_knn, X_train, y_train, cv=5, scoring=('neg_mean_squared_error', 'neg_mean_absolute_error', 'r2'))
-#***************************** this portion of the code was inspired by code provided by chatgpt (wasn't sure how to get each score from array)
-mean_mse = -cv_results['test_neg_mean_squared_error'].mean()
-std_mse = cv_results['test_neg_mean_squared_error'].std()
-mean_mae = -cv_results['test_neg_mean_absolute_error'].mean()
-std_mae = cv_results['test_neg_mean_absolute_error'].std()
-
-rmse = np.sqrt(mean_mse)
-std_mse = np.sqrt(std_mse)
-#*************************************
-print("Mean absolute Error (CV):", mean_mse)
-print("Standard Deviation of MSE (CV):", std_mse)
-print("Root Mean Squared Error (CV)", rmse)
-print("Standard Deviation of RMSE (CV):", std_mse)
-print("============================================================")
 
 '''
 model_knn = KNeighborsRegressor()
