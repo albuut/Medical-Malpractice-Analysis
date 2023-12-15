@@ -97,36 +97,6 @@ fit_forward_model = forward_model.fit()
 # display the results of the model
 # print(fit_forward_model.summary())
 
-# make predictions using the new model with selected features from forward selection
-f_y_predict = fit_forward_model.predict(X_forwardselect)
-f_y_predict = f_y_predict[:len(df_test_y)]
-# calculate the root mean squared error and mean absolute error of the predictions compared to the actual values
-f_mse = mean_squared_error(df_test_y, f_y_predict)
-f_mae = mean_absolute_error(df_test_y, f_y_predict)
-# f_mse = mean_absolute_error(y, f_y_predict)
-# f_mse = mean_squared_error(y, f_y_predict)
-print("Forward selection RMSE:", np.sqrt(f_mse))
-print("Forward selection MAE:", f_mae)
-
-# # Scatter plot for backward selection
-# plt.figure(figsize=(10, 6))
-# plt.scatter(df_test['log_Amount'], b_y_predict,
-#             label='Backward Selection', alpha=0.7)
-# plt.xlabel('Actual log_Amount')
-# plt.ylabel('Predicted log_Amount')
-# plt.title('Scatter Plot for Backward Selection Model Predictions on Test Set')
-# plt.legend()
-# plt.show()
-
-# # Scatter plot for forward selection
-# plt.figure(figsize=(10, 6))
-# plt.scatter(df_test['log_Amount'], f_y_predict,
-#             label='Forward Selection', alpha=0.7)
-# plt.xlabel('Actual log_Amount')
-# plt.ylabel('Predicted log_Amount')
-# plt.title('Scatter Plot for Forward Selection Model Predictions on Test Set')
-# plt.legend()
-# plt.show()
 
 # Define the number of folds for k-fold cross-validation
 k_folds = 5
@@ -173,3 +143,34 @@ print("Backward Selection Average RMSE:", np.mean(backward_rmse_list))
 print("Backward Selection Average MAE:", np.mean(backward_mae_list))
 print("Forward Selection Average RMSE:", np.mean(forward_rmse_list))
 print("Forward Selection Average MAE:", np.mean(forward_mae_list))
+
+# make predictions using the new model with selected features from forward selection
+f_y_predict = fit_forward_model.predict(X_forwardselect)
+f_y_predict = f_y_predict[:len(df_test_y)]
+# calculate the root mean squared error and mean absolute error of the predictions compared to the actual values
+f_mse = mean_squared_error(df_test_y, f_y_predict)
+f_mae = mean_absolute_error(df_test_y, f_y_predict)
+# f_mse = mean_absolute_error(y, f_y_predict)
+# f_mse = mean_squared_error(y, f_y_predict)
+print("Forward selection RMSE:", np.sqrt(f_mse))
+print("Forward selection MAE:", f_mae)
+
+# Scatter plot for backward selection
+plt.figure(figsize=(10, 6))
+plt.scatter(df_test['log_Amount'], b_y_predict,
+            label='Backward Selection', alpha=0.7)
+plt.xlabel('Actual log_Amount')
+plt.ylabel('Predicted log_Amount')
+plt.title('Scatter Plot for Backward Selection Model Predictions on Test Set')
+plt.legend()
+plt.show()
+
+# Scatter plot for forward selection
+plt.figure(figsize=(10, 6))
+plt.scatter(df_test['log_Amount'], f_y_predict,
+            label='Forward Selection', alpha=0.7)
+plt.xlabel('Actual log_Amount')
+plt.ylabel('Predicted log_Amount')
+plt.title('Scatter Plot for Forward Selection Model Predictions on Test Set')
+plt.legend()
+plt.show()
