@@ -229,7 +229,7 @@ X_test_backward = rp_backward.transform(
 # T-Statistic: 1.144370323086886
 # P-Value: 0.25248400690469
 '''
-
+'''
 # Polynomial Spline Transformer
 scaler_backward = StandardScaler()
 spline_backward = PolynomialFeatures(degree=2, include_bias=False)
@@ -244,7 +244,7 @@ X_test_backward = spline_backward.transform(
 # Mean Absolute Error: 0.2873368987172316
 # T-Statistic: 0.2781822423493186
 # P-Value: 0.780875387795647
-
+'''
 
 # Train the model
 coefficients_backward = linear_regression(
