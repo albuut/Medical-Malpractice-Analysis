@@ -257,7 +257,7 @@ print("T-Statistic:", t_stat_backward)  # 0.5615286668588928
 print("P-Value", p_val_backward)  # 0.5744435869932845
 
 
-# Backward selection testing
+# Forward selection testing
 forward_selected_features = forward_selection(X.copy(), y)
 print("\n\nFeatures selected from forward selection:", forward_selected_features)
 
