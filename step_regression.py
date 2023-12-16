@@ -1,10 +1,13 @@
 import sys
 import pandas as pd
 import numpy as np
+import scipy.stats as stats
 import statsmodels.api as sm
 from stepwise_regression import step_reg
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import KFold
+import matplotlib.pyplot as plt
 
 # input prprocessed .csv malpractice data file in from the command line
 file_input = sys.argv[1]
@@ -62,13 +65,17 @@ fit_back_model = back_model.fit()
 b_y_predict = fit_back_model.predict(X_backselect)
 # use the testing set
 b_y_predict = b_y_predict[:len(df_test_y)]
-# calculate the root mean squared error and mean absolute error of the  predictions compared to the actual values
+# calculate the root mean squared error and mean absolute error, t-statistic, and p-value of the predictions compared to the actual values
 b_mse = mean_squared_error(df_test_y, b_y_predict)
 b_mae = mean_absolute_error(df_test_y, b_y_predict)
-# b_mse = mean_squared_error(y, b_y_predict)
-# b_mae = mean_absolute_error(y, b_y_predict)
-print("Backward selection RMSE:", np.sqrt(b_mse))
-print("Backward selection MAE:", b_mae)
+t_stat_backward, p_val_backward = stats.ttest_ind(
+    df_test['log_Amount'], b_y_predict)
+
+print("\nBackward selection metrics:")
+print("RMSE:", np.sqrt(b_mse))
+print("MAE:", b_mae)
+print("T-Statistic:", t_stat_backward)
+print("P-Value:", p_val_backward)
 
 # using the step_reg library, perform forward selection on the features (X)
 # forwardselect will store a list of feature names sorted by significance to 'log_Amount' (highest to lowest)
@@ -86,10 +93,34 @@ fit_forward_model = forward_model.fit()
 # make predictions using the new model with selected features from forward selection
 f_y_predict = fit_forward_model.predict(X_forwardselect)
 f_y_predict = f_y_predict[:len(df_test_y)]
-# calculate the root mean squared error and mean absolute error of the predictions compared to the actual values
+# calculate the root mean squared error mean absolute error, t-statistic, and p-value of the predictions compared to the actual values
 f_mse = mean_squared_error(df_test_y, f_y_predict)
 f_mae = mean_absolute_error(df_test_y, f_y_predict)
-# f_mse = mean_absolute_error(y, f_y_predict)
-# f_mse = mean_squared_error(y, f_y_predict)
-print("Forward selection RMSE:", np.sqrt(f_mse))
-print("Forward selection MAE:", f_mae)
+t_stat_forward, p_val_forward = stats.ttest_ind(
+    df_test['log_Amount'], f_y_predict)
+
+print("\nForward selection metrics: ")
+print("RMSE:", np.sqrt(f_mse))
+print("MAE:", f_mae)
+print("T-Statistic:", t_stat_forward)
+print("P-Value:", p_val_forward)
+
+# Scatter plot for backward selection
+plt.figure(figsize=(10, 6))
+plt.scatter(df_test['log_Amount'], b_y_predict,
+            label='Backward Selection', alpha=0.7)
+plt.xlabel('Actual log_Amount')
+plt.ylabel('Predicted log_Amount')
+plt.title('Scatter Plot for Backward Selection Model Predictions on Test Set')
+plt.legend()
+plt.show()
+
+# Scatter plot for forward selection
+plt.figure(figsize=(10, 6))
+plt.scatter(df_test['log_Amount'], f_y_predict,
+            label='Forward Selection', alpha=0.7)
+plt.xlabel('Actual log_Amount')
+plt.ylabel('Predicted log_Amount')
+plt.title('Scatter Plot for Forward Selection Model Predictions on Test Set')
+plt.legend()
+plt.show()
