@@ -95,12 +95,11 @@ for feature, coefficient in feature_coefficients[:2]:
     print(f"{feature}: {coefficient}")
 
 # Make predictions on the test set
-# Inverse transform for log-transformed predictions (base 10)
 y_pred = lasso_custom.predict(X_test_scaled)
 
 # Visualize actual vs. predicted values
 plt.figure(figsize=(8, 6))
-plt.scatter(y_test, y_pred, alpha=0.1)  # Inverse transform for log-transformed target variable
+plt.scatter(y_test, y_pred, alpha=0.1)
 plt.xlabel("Actual Values")
 plt.ylabel("Predicted Values")
 plt.title("Actual vs. Predicted")
@@ -108,8 +107,8 @@ plt.grid(True)
 plt.show()
 
 # Evaluate test set performance
-mae = mean_absolute_error(y_test, y_pred)  # Inverse transform for log-transformed target variable
-mse = mean_squared_error(y_test, y_pred)  # Inverse transform for log-transformed target variable
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred) 
 
 print("Test Results:")
 print(f"Mean Absolute Error (Test): {mae}")

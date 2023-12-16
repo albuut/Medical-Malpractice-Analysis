@@ -20,6 +20,17 @@ from sklearn.model_selection import cross_val_predict
 
 
 #default
+'''
+
+df_train = pd.read_csv('medicalmalpractice.csv_train.csv')
+df_test = pd.read_csv('medicalmalpractice.csv_test.csv')
+
+X_train = df_train.drop(columns=['Amount', 'log_Amount'])
+y_train = df_train['log_Amount']
+
+X_test = df_test.drop(columns=['Amount', 'log_Amount'])
+y_test = df_test['log_Amount']
+
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
@@ -65,6 +76,7 @@ print("Test Results:")
 print(f"Mean Absolute Error (Test): {mae}")
 print(f"Mean Squared Error (Test): {mse}")
 
+'''
 
 
 
@@ -264,7 +276,6 @@ print(f"Mean Squared Error (Test): {mse}")
 '''
 
 #tsne
-'''
 df_train = pd.read_csv('medicalmalpractice.csv_train.csv')
 df_test = pd.read_csv('medicalmalpractice.csv_test.csv')
 
@@ -310,4 +321,3 @@ mse = mean_squared_error(y_test, y_pred)
 print("Test Results:")
 print(f"Mean Absolute Error (Test): {mae}")
 print(f"Mean Squared Error (Test): {mse}")
-'''
